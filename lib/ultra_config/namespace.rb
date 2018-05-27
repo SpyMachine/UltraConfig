@@ -3,8 +3,8 @@ require_relative 'config'
 module UltraConfig
   class Namespace
     def initialize(&block)
-      @objects = {}
-      self.instance_eval(&block)
+      @configuration = block
+      reset
     end
 
     def namespace(name, &block)
@@ -25,6 +25,11 @@ module UltraConfig
 
     def setting(name, value)
       Settings.set(name, value)
+    end
+
+    def reset
+      @objects = {}
+      self.instance_eval(&@configuration)
     end
   end
 end

@@ -5,16 +5,16 @@ RSpec.describe UltraConfig::Namespace do
 
   describe '#initialize' do
     before(:each) do
-      allow_any_instance_of(described_class).to receive(:instance_eval)
+      allow_any_instance_of(described_class).to receive(:reset)
       @namespace = described_class.new(&block)
     end
 
-    it 'sets its objects to an empty array' do
-      expect(@namespace.instance_variable_get(:@objects)).to eq({})
+    it 'sets the configuration block' do
+      expect(@namespace.instance_variable_get(:@configuration)).to eq(block)
     end
 
-    it 'runs the given block on itself' do
-      expect(@namespace).to have_received(:instance_eval)
+    it 'calls reset' do
+      expect(@namespace).to have_received(:reset)
     end
   end
 
@@ -75,6 +75,22 @@ RSpec.describe UltraConfig::Namespace do
 
       it 'gets the namespace' do
         expect(@namespace.my_namespace).to be_a(UltraConfig::Namespace)
+      end
+    end
+
+    describe '#reset' do
+      before(:each) do
+        @namespace = described_class.new(&block)
+        allow(@namespace).to receive(:instance_eval)
+        @namespace.reset
+      end
+
+      it 'sets its objects to an empty array' do
+        expect(@namespace.instance_variable_get(:@objects)).to eq({})
+      end
+
+      it 'runs the given block on itself' do
+        expect(@namespace).to have_received(:instance_eval)
       end
     end
   end

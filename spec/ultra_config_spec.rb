@@ -84,4 +84,12 @@ RSpec.describe UltraConfig do
       end
     end
   end
+
+  describe 'reset' do
+    it 'can be reset' do
+      expect(ConfigTest.default).to eq('new')
+      ConfigTest.reset
+      expect(ConfigTest.default).to eq(:value)
+    end
+  end
 end
