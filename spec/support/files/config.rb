@@ -1,0 +1,33 @@
+require 'ultra_config'
+
+ConfigTest = UltraConfig.define do
+  config :blank
+  config :default, :value
+
+  config :one_of, :this do
+    one_of %i[this that]
+  end
+
+  config :match, 'this' do
+    match /this/
+  end
+
+  config :range, 4 do
+    range 1, 9
+  end
+
+  namespace :space1 do
+    config :default, :another_value
+  end
+
+  namespace :space2 do
+    namespace :space3 do
+      config :default, :a_third_value
+    end
+  end
+end
+
+
+
+
+
