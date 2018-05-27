@@ -106,6 +106,13 @@ RSpec.describe UltraConfig::Validator do
 
         it_is :invalid
       end
+
+      context 'old value and new value are both booleans' do
+        let(:value) { false }
+        let(:criteria) { true }
+
+        it_is :valid
+      end
     end
 
     describe '.one_of' do

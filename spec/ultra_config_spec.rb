@@ -74,13 +74,21 @@ RSpec.describe UltraConfig do
 
   describe 'settings' do
     describe 'type_safety, :strong' do
-      it 'can not change the type unless it\'s nil' do
+      before(:all) do
         # TODO this sucks, fix this
         require_relative 'support/files/strongly_typed'
-
         StronglyTypedTest.blank = :new
+      end
+
+      it 'can not change the type unless it\'s nil' do
         expect(StronglyTypedTest.blank).to be(:new)
         expect { StronglyTypedTest.blank = 'new' }.to raise_error(UltraConfig::Validator::ValidationError)
+      end
+
+      it 'booleans can switch boolean type' do
+        expect(StronglyTypedTest.boolean).to be(true)
+        StronglyTypedTest.boolean = false
+        expect(StronglyTypedTest.boolean).to be(false)
       end
     end
   end

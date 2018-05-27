@@ -1,5 +1,9 @@
+require_relative 'utilities/boolean'
+
 module UltraConfig
   class Validator
+    extend Boolean
+
     class ValidationError < StandardError; end
     class TypeValidationError < ValidationError; end
 
@@ -14,6 +18,7 @@ module UltraConfig
 
     def self.type_safety(old)
       return if old.nil?
+      return if old.is_a?(Boolean) && @test_value.is_a?(Boolean)
 
       raise TypeValidationError if old.class != @test_value.class
     end
