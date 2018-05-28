@@ -56,7 +56,7 @@ end
 
 # It can then be used like:
 
-ConfigTest.space1.space2.default
+ConfigTest.space2.space3.default
 
 ```
 
@@ -68,7 +68,7 @@ After checking out the repo, run `bundle install` to install dependencies. Then,
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ultra_config.
+Bug reports and pull requests are welcome on GitHub at https://github.com/SpyMachine/ultra_config.
 
 ## License
 
