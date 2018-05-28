@@ -59,6 +59,16 @@ RSpec.describe UltraConfig do
           expect { ConfigTest.range = 12 }.to raise_error(UltraConfig::Validator::ValidationError)
         end
       end
+
+      context 'custom validation' do
+        it 'does not raise an error if block returns true' do
+          expect { ConfigTest.custom = { this: :that, that: :this } }.to_not raise_error
+        end
+
+        it 'does raise an error if block returns false' do
+          expect { ConfigTest.custom = { this: :that2 } }.to raise_error(UltraConfig::Validator::ValidationError)
+        end
+      end
     end
   end
 

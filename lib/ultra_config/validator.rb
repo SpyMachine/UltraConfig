@@ -34,5 +34,9 @@ module UltraConfig
     def self.range(low, high)
       raise ValidationError unless (@test_value >= low && @test_value <= high)
     end
+
+    def self.custom(&block)
+      raise ValidationError unless block.call(@test_value)
+    end
   end
 end

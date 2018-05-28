@@ -67,15 +67,17 @@ RSpec.describe UltraConfig::Validator do
   end
 
   describe 'validators' do
+    let(:block) {}
+
     shared_examples_for :valid do
       it 'does not raise an error' do
-        expect { subject.send(test, *criteria) }.to_not raise_error
+        expect { subject.send(test, *criteria, &block) }.to_not raise_error
       end
     end
 
     shared_examples_for :invalid do
       it 'does not raise an error' do
-        expect { subject.send(test, *criteria) }.to raise_error(UltraConfig::Validator::ValidationError)
+        expect { subject.send(test, *criteria, &block) }.to raise_error(UltraConfig::Validator::ValidationError)
       end
     end
 
@@ -180,6 +182,18 @@ RSpec.describe UltraConfig::Validator do
         let(:criteria) { [3, 6] }
 
         it_is :invalid
+      end
+    end
+
+    describe '.custom' do
+      let(:test) { :custom }
+
+      context 'valid' do
+        let(:value) { 2 }
+        let(:criteria) {}
+        let(:block) { Proc.new { |value| value % 2 == 0 } }
+
+        it_is :valid
       end
     end
   end

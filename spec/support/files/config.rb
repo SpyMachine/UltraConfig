@@ -4,9 +4,7 @@ ConfigTest = UltraConfig.define do
   config :blank
   config :default, :value
 
-  config :one_of, :this do
-    one_of %i[this that]
-  end
+  config(:one_of, :this) { one_of %i[this that] }
 
   config :match, 'this' do
     match /this/
@@ -14,6 +12,10 @@ ConfigTest = UltraConfig.define do
 
   config :range, 4 do
     range 1, 9
+  end
+
+  config :custom, { this: :that } do
+    custom { |value| value[:this] == :that }
   end
 
   namespace :space1 do
@@ -26,7 +28,6 @@ ConfigTest = UltraConfig.define do
     end
   end
 end
-
 
 
 
