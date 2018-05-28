@@ -41,17 +41,19 @@ RSpec.describe UltraConfig::Validator do
 
     context 'checking type safety' do
       let(:result) {}
+      let(:explicit) { false }
 
       before(:each) do
         allow(UltraConfig::Settings).to receive(:type_safety) { type }
         allow(subject).to receive(:type_safety)
+        subject.instance_variable_set(:@explicit_type_safety, explicit)
         subject.validate('', '')
       end
 
       context 'type safety is strong' do
         let(:type) { :strong }
 
-        it 'validates the type' do
+        it 'calls type safety validation' do
           expect(subject).to have_received(:type_safety)
         end
       end
@@ -59,7 +61,16 @@ RSpec.describe UltraConfig::Validator do
       context 'type safety is weak' do
         let(:type) { :weak }
 
-        it 'does not validate the type' do
+        it 'calls type safety validation' do
+          expect(subject).to have_received(:type_safety)
+        end
+      end
+
+      context 'explicit type safety' do
+        let(:type) { :strong }
+        let(:explicit) { true }
+
+        it 'does not call type safety again' do
           expect(subject).to_not have_received(:type_safety)
         end
       end
@@ -68,6 +79,7 @@ RSpec.describe UltraConfig::Validator do
 
   describe 'validators' do
     let(:block) {}
+    let(:old_value) {}
 
     shared_examples_for :valid do
       it 'does not raise an error' do
@@ -83,6 +95,7 @@ RSpec.describe UltraConfig::Validator do
 
     before(:each) do
       subject.instance_variable_set(:@test_value, value)
+      subject.instance_variable_set(:@old_value, old_value)
     end
 
     describe '.type' do
@@ -104,7 +117,8 @@ RSpec.describe UltraConfig::Validator do
 
       context 'old value has different class than new value' do
         let(:value) { :new }
-        let(:criteria) { 'old' }
+        let(:old_value) { 'old' }
+        let(:criteria) { :strong }
 
         it_is :invalid
       end

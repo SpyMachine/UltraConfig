@@ -14,6 +14,14 @@ ConfigTest = UltraConfig.define do
     range 1, 9
   end
 
+  config :weak_type, :sym do
+    type_safety :weak
+  end
+
+  config :strong_type, :sym do
+    type_safety :strong
+  end
+
   config :custom, { this: :that } do
     custom { |value| value[:this] == :that }
   end

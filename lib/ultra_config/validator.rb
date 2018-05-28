@@ -8,19 +8,26 @@ module UltraConfig
     class TypeValidationError < ValidationError; end
 
     def self.validate(old, new, &validation)
+      @old_value = old
       @test_value = new
-      type_safety(old) if Settings.type_safety == :strong
 
       self.instance_eval(&validation) if validation
+
+      type_safety(Settings.type_safety) unless @explicit_type_safety
     ensure
       @test_value = nil
+      @old_value = nil
+      @explicit_type_safety = false
     end
 
-    def self.type_safety(old)
-      return if old.nil?
-      return if old.is_a?(Boolean) && @test_value.is_a?(Boolean)
+    def self.type_safety(type)
+      @explicit_type_safety = true
+      return unless type == :strong
 
-      raise TypeValidationError if old.class != @test_value.class
+      return if @old_value.nil?
+      return if @old_value.is_a?(Boolean) && @test_value.is_a?(Boolean)
+
+      raise TypeValidationError if @old_value.class != @test_value.class
     end
 
     def self.one_of(list)

@@ -60,6 +60,28 @@ RSpec.describe UltraConfig do
         end
       end
 
+      context 'type safety validation' do
+        context 'type is weak' do
+          it 'does not raise an error' do
+            expect { ConfigTest.weak_type = 'string' }.to_not raise_error
+          end
+        end
+
+        context 'type is strong' do
+          context 'class is same' do
+            it 'does not raise an error' do
+              expect { ConfigTest.strong_type = :sym2 }.to_not raise_error
+            end
+          end
+
+          context 'class is different' do
+            it 'does not raise an error' do
+              expect { ConfigTest.strong_type = 'string' }.to raise_error(UltraConfig::Validator::ValidationError)
+            end
+          end
+        end
+      end
+
       context 'custom validation' do
         it 'does not raise an error if block returns true' do
           expect { ConfigTest.custom = { this: :that, that: :this } }.to_not raise_error
@@ -99,6 +121,10 @@ RSpec.describe UltraConfig do
         expect(StronglyTypedTest.boolean).to be(true)
         StronglyTypedTest.boolean = false
         expect(StronglyTypedTest.boolean).to be(false)
+      end
+
+      it 'lets configs explicitly choose there type safety' do
+        expect { StronglyTypedTest.weak_type = 'string' }.to_not raise_error
       end
     end
   end
