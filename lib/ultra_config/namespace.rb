@@ -31,5 +31,14 @@ module UltraConfig
       @objects = {}
       self.instance_eval(&@configuration)
     end
+
+    def to_s
+      objs = []
+
+      output = '{ '
+      @objects.each { |name, object| objs << "#{name}: #{object.to_s}" }
+      output << objs.join(', ')
+      output << ' }'
+    end
   end
 end
