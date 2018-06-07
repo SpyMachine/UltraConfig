@@ -11,6 +11,8 @@ module UltraConfig
       @old_value = old
       @test_value = new
 
+      return if @test_value.nil?
+
       self.instance_eval(&validation) if validation
 
       type_safety(Settings.type_safety) unless @explicit_type_safety
