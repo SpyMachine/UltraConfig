@@ -7,6 +7,10 @@ module UltraConfig
       reset
     end
 
+    def setting(name, value)
+      Settings.set(name, value)
+    end
+
     def namespace(name, &block)
       @objects[name] = Namespace.new(&block)
     end
@@ -15,16 +19,16 @@ module UltraConfig
       @objects[name] = Config.new(default, &block)
     end
 
+    def helper(name, &block)
+      define_singleton_method(name, &block)
+    end
+
     def method_missing(m, *args)
       if m.to_s.end_with?('=')
         @objects[m.to_s[0...-1].to_sym].value=(args[0])
       else
         @objects[m].is_a?(Config) ? @objects[m].value : @objects[m]
       end
-    end
-
-    def setting(name, value)
-      Settings.set(name, value)
     end
 
     def reset
