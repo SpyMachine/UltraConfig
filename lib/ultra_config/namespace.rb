@@ -3,8 +3,13 @@ require_relative 'config'
 module UltraConfig
   class Namespace
     def initialize(&block)
-      @configuration = block
+      @configuration = [block]
       reset
+    end
+
+    def extend(&block)
+      @configuration << block
+      self.instance_eval(&block)
     end
 
     def setting(name, value)
@@ -33,7 +38,7 @@ module UltraConfig
 
     def reset
       @objects = {}
-      self.instance_eval(&@configuration)
+      @configuration.each { |config| self.instance_eval(&config) }
     end
 
     def to_s

@@ -10,7 +10,7 @@ RSpec.describe UltraConfig::Namespace do
     end
 
     it 'sets the configuration block' do
-      expect(@namespace.instance_variable_get(:@configuration)).to eq(block)
+      expect(@namespace.instance_variable_get(:@configuration)).to eq([block])
     end
 
     it 'calls reset' do
