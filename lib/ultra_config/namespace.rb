@@ -49,5 +49,18 @@ module UltraConfig
       output << objs.join(', ')
       output << ' }'
     end
+
+    def to_h
+      hash = {}
+      @objects.each do |name, object|
+        if object.is_a?(Config)
+          hash[name] = object.value
+        else
+          hash[name] = object.to_h
+        end
+      end
+
+      hash
+    end
   end
 end
