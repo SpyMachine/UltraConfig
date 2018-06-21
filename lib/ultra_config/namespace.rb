@@ -20,8 +20,8 @@ module UltraConfig
       @objects[name] = Namespace.new(&block)
     end
 
-    def config(name, default = nil, &block)
-      @objects[name] = Config.new(default, &block)
+    def config(name, default = nil, options = {}, &block)
+      @objects[name] = Config.new(default, options, &block)
     end
 
     def helper(name, &block)
@@ -54,7 +54,7 @@ module UltraConfig
       hash = {}
       @objects.each do |name, object|
         if object.is_a?(Config)
-          hash[name] = object.value
+          object.sanitize? ? hash[name] = '*****' : hash[name] = object.value
         else
           hash[name] = object.to_h
         end

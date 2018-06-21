@@ -5,8 +5,11 @@ module UltraConfig
   class Config
     attr_reader :value
 
-    def initialize(default_value, &block)
+    def initialize(default_value, options = {}, &block)
       @validation = block
+
+      @sanitize = options[:sanitize] || false
+
       self.value=(default_value)
     end
 
@@ -18,6 +21,10 @@ module UltraConfig
 
     def validate(new_value)
       Validator.validate(@value, new_value, &@validation)
+    end
+
+    def sanitize?
+      @sanitize
     end
 
     def to_s
