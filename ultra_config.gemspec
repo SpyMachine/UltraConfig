@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'ultra_config'
-  spec.version       = '0.8.0'
+  spec.version       = '0.9.0'
   spec.authors       = ['Gregory Kuruc']
   spec.email         = ['gjk910327@gmail.com']
 
