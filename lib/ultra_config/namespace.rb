@@ -18,22 +18,17 @@ module UltraConfig
 
     def namespace(name, &block)
       @objects[name] = Namespace.new(&block)
+      define_singleton_method(name) { @objects[name] }
     end
 
     def config(name, default = nil, options = {}, &block)
       @objects[name] = Config.new(default, options, &block)
+      define_singleton_method("#{name}=") { |value| @objects[name].value = value }
+      define_singleton_method(name) { @objects[name].value }
     end
 
     def helper(name, &block)
       define_singleton_method(name, &block)
-    end
-
-    def method_missing(m, *args)
-      if m.to_s.end_with?('=')
-        @objects[m.to_s[0...-1].to_sym].value=(args[0])
-      else
-        @objects[m].is_a?(Config) ? @objects[m].value : @objects[m]
-      end
     end
 
     def reset
