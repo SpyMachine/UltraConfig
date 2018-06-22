@@ -2,6 +2,8 @@ require_relative 'config'
 
 module UltraConfig
   class Namespace
+    class ObjectNotFoundError < StandardError; end
+
     def initialize(&block)
       @configuration = [block]
       reset
@@ -56,6 +58,10 @@ module UltraConfig
       end
 
       hash
+    end
+
+    def method_missing(m)
+      raise ObjectNotFoundError
     end
   end
 end
