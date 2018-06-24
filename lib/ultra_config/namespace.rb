@@ -4,6 +4,8 @@ module UltraConfig
   class Namespace
     class ObjectNotFoundError < StandardError; end
 
+    attr_reader :objects
+
     def initialize(&block)
       @configuration = [block]
       reset
@@ -38,16 +40,20 @@ module UltraConfig
       @configuration.each { |config| self.instance_eval(&config) }
     end
 
-    def to_s
-      objs = []
+    def to_h
+      hash = {}
+      @objects.each do |name, object|
+        if object.is_a?(Config)
+          hash[name] = object.value
+        else
+          hash[name] = object.to_h
+        end
+      end
 
-      output = '{ '
-      @objects.each { |name, object| objs << "#{name}: #{object.to_s}" }
-      output << objs.join(', ')
-      output << ' }'
+      hash
     end
 
-    def to_h
+    def to_sanitized_h
       hash = {}
       @objects.each do |name, object|
         if object.is_a?(Config)
