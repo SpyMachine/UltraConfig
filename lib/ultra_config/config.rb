@@ -1,26 +1,30 @@
-require_relative 'validator'
+require_relative 'validation'
 require_relative 'settings'
 
 module UltraConfig
   class Config
+    include Validation
+
     attr_reader :value
 
-    def initialize(default_value, options = {}, &block)
-      @validation = block
-
+    def initialize(options = {}, &block)
+      @config_block = block
+      @value = options[:default] || nil
       @sanitize = options[:sanitize] || false
-
-      self.value=(default_value)
     end
 
     def value=(value)
-      validate(value)
-
-      @value = value
+      @intermediate_value = value
+      self.instance_eval(&@config_block) if @config_block
+      type_safety(Settings.type_safety) unless @type_safety_checked
+      @value = @intermediate_value
+    ensure
+      @type_safety_checked = false
+      @intermediate_value = nil
     end
 
-    def validate(new_value)
-      Validator.validate(@value, new_value, &@validation)
+    def pre_set_transform(&block)
+      @intermediate_value = yield(@intermediate_value)
     end
 
     def sanitize?

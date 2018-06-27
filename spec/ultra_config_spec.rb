@@ -2,6 +2,8 @@ require 'spec_helper'
 require_relative 'support/files/config'
 
 RSpec.describe UltraConfig do
+  let(:validation_error) { UltraConfig::Validation::ValidationError }
+
   describe 'configs' do
     context 'undefined config'
       it 'sets value to nil' do
@@ -36,7 +38,7 @@ RSpec.describe UltraConfig do
         end
 
         it 'does raise an error if not in list' do
-          expect { ConfigTest.one_of = :the_other }.to raise_error(UltraConfig::Validator::ValidationError)
+          expect { ConfigTest.one_of = :the_other }.to raise_error(validation_error)
         end
       end
 
@@ -46,7 +48,7 @@ RSpec.describe UltraConfig do
         end
 
         it 'does raise an error if matches' do
-          expect { ConfigTest.match = 'that' }.to raise_error(UltraConfig::Validator::ValidationError)
+          expect { ConfigTest.match = 'that' }.to raise_error(validation_error)
         end
       end
 
@@ -56,7 +58,7 @@ RSpec.describe UltraConfig do
         end
 
         it 'does raise an error if out of range' do
-          expect { ConfigTest.range = 12 }.to raise_error(UltraConfig::Validator::ValidationError)
+          expect { ConfigTest.range = 12 }.to raise_error(validation_error)
         end
       end
 
@@ -76,7 +78,7 @@ RSpec.describe UltraConfig do
 
           context 'class is different' do
             it 'does not raise an error' do
-              expect { ConfigTest.strong_type = 'string' }.to raise_error(UltraConfig::Validator::ValidationError)
+              expect { ConfigTest.strong_type = 'string' }.to raise_error(validation_error)
             end
           end
         end
@@ -88,7 +90,7 @@ RSpec.describe UltraConfig do
         end
 
         it 'does raise an error if block returns false' do
-          expect { ConfigTest.custom = { this: :that2 } }.to raise_error(UltraConfig::Validator::ValidationError)
+          expect { ConfigTest.custom = { this: :that2 } }.to raise_error(validation_error)
         end
       end
     end
@@ -114,7 +116,7 @@ RSpec.describe UltraConfig do
 
       it 'can not change the type unless it\'s nil' do
         expect(StronglyTypedTest.blank).to be(:new)
-        expect { StronglyTypedTest.blank = 'new' }.to raise_error(UltraConfig::Validator::ValidationError)
+        expect { StronglyTypedTest.blank = 'new' }.to raise_error(validation_error)
       end
 
       it 'booleans can switch boolean type' do
