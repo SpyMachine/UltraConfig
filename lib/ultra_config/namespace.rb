@@ -59,7 +59,7 @@ module UltraConfig
         if object.is_a?(Config)
           object.sanitize? ? hash[name] = '*****' : hash[name] = object.value
         else
-          hash[name] = object.to_h
+          hash[name] = object.to_sanitized_h
         end
       end
 
