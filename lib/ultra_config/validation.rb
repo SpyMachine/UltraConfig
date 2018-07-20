@@ -4,7 +4,12 @@ module UltraConfig
   module Validation
     include Boolean
 
-    class ValidationError < StandardError; end
+    class ValidationError < StandardError;
+      def initialize(msg: nil)
+        super
+      end
+    end
+
     class TypeValidationError < ValidationError; end
 
     def type_safety(type)
