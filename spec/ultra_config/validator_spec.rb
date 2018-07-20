@@ -1,214 +1,139 @@
 require "spec_helper"
 
-RSpec.describe UltraConfig::Validator do
-  subject { described_class }
+RSpec.describe UltraConfig::Validation do
+  subject { UltraConfig::Config.new }
   let(:validation) { Proc.new {} }
+  let(:block) {}
+  let(:old_value) {}
+  let(:validation_error) { UltraConfig::Validation::ValidationError }
 
-  describe '.validate' do
-    before(:each) do
-      allow(subject).to receive(:instance_eval) { result }
-    end
-
-    context 'validation is nil' do
-      it 'will not perform any validation' do
-        expect(subject).to_not have_received(:instance_eval)
-      end
-    end
-
-    context 'value is valid' do
-      let(:result) {}
-
-      it 'returns with no errors' do
-        expect { subject.validate('', '', &validation) }.to_not raise_error
-      end
-
-      it 'sets the test variable to nil' do
-        expect(subject.instance_variable_get(:@test_value)).to be_nil
-      end
-    end
-
-    context 'value is invalid' do
-      let(:result) { raise UltraConfig::Validator::ValidationError }
-
-      it 'returns with no errors' do
-        expect { subject.validate('', '', &validation) }.to raise_error(UltraConfig::Validator::ValidationError)
-      end
-
-      it 'sets the test variable to nil' do
-        expect(subject.instance_variable_get(:@test_value)).to be_nil
-      end
-    end
-
-    context 'checking type safety' do
-      let(:result) {}
-      let(:explicit) { false }
-
-      before(:each) do
-        allow(UltraConfig::Settings).to receive(:type_safety) { type }
-        allow(subject).to receive(:type_safety)
-        subject.instance_variable_set(:@explicit_type_safety, explicit)
-        subject.validate('', '')
-      end
-
-      context 'type safety is strong' do
-        let(:type) { :strong }
-
-        it 'calls type safety validation' do
-          expect(subject).to have_received(:type_safety)
-        end
-      end
-
-      context 'type safety is weak' do
-        let(:type) { :weak }
-
-        it 'calls type safety validation' do
-          expect(subject).to have_received(:type_safety)
-        end
-      end
-
-      context 'explicit type safety' do
-        let(:type) { :strong }
-        let(:explicit) { true }
-
-        it 'does not call type safety again' do
-          expect(subject).to_not have_received(:type_safety)
-        end
-      end
+  shared_examples_for :valid do
+    it 'does not raise an error' do
+      expect { subject.send(test, *criteria, &block) }.to_not raise_error
     end
   end
 
-  describe 'validators' do
-    let(:block) {}
-    let(:old_value) {}
+  shared_examples_for :invalid do
+    it 'does not raise an error' do
+      expect { subject.send(test, *criteria, &block) }.to raise_error(validation_error)
+    end
+  end
 
-    shared_examples_for :valid do
-      it 'does not raise an error' do
-        expect { subject.send(test, *criteria, &block) }.to_not raise_error
-      end
+  before(:each) do
+    subject.instance_variable_set(:@intermediate_value, value)
+    subject.instance_variable_set(:@value, old_value)
+  end
+
+  describe '.type' do
+    let(:test) { :type_safety }
+
+    context 'old value is nil' do
+      let(:value) { :new }
+      let(:criteria) { [nil] }
+
+      it_is :valid
     end
 
-    shared_examples_for :invalid do
-      it 'does not raise an error' do
-        expect { subject.send(test, *criteria, &block) }.to raise_error(UltraConfig::Validator::ValidationError)
-      end
+    context 'old value has same class as new value' do
+      let(:value) { :new }
+      let(:criteria) { :old }
+
+      it_is :valid
     end
 
-    before(:each) do
-      subject.instance_variable_set(:@test_value, value)
-      subject.instance_variable_set(:@old_value, old_value)
+    context 'old value has different class than new value' do
+      let(:value) { :new }
+      let(:old_value) { 'old' }
+      let(:criteria) { :strong }
+
+      it_is :invalid
     end
 
-    describe '.type' do
-      let(:test) { :type_safety }
+    context 'old value and new value are both booleans' do
+      let(:value) { false }
+      let(:criteria) { true }
 
-      context 'old value is nil' do
-        let(:value) { :new }
-        let(:criteria) { [nil] }
+      it_is :valid
+    end
+  end
 
-        it_is :valid
-      end
+  describe '.one_of' do
+    let(:test) { :one_of }
 
-      context 'old value has same class as new value' do
-        let(:value) { :new }
-        let(:criteria) { :old }
+    context 'value is part of list' do
+      let(:value) { 'value' }
+      let(:criteria) { [['value']] }
 
-        it_is :valid
-      end
-
-      context 'old value has different class than new value' do
-        let(:value) { :new }
-        let(:old_value) { 'old' }
-        let(:criteria) { :strong }
-
-        it_is :invalid
-      end
-
-      context 'old value and new value are both booleans' do
-        let(:value) { false }
-        let(:criteria) { true }
-
-        it_is :valid
-      end
+      it_is :valid
     end
 
-    describe '.one_of' do
-      let(:test) { :one_of }
+    context 'valid is not part of the list' do
+      let(:value) { 'value' }
+      let(:criteria) { [['not', 'here']] }
 
-      context 'value is part of list' do
-        let(:value) { 'value' }
-        let(:criteria) { [['value']] }
+      it_is :invalid
+    end
+  end
 
-        it_is :valid
-      end
+  describe '.match' do
+    let(:test) { :match }
 
-      context 'valid is not part of the list' do
-        let(:value) { 'value' }
-        let(:criteria) { [['not', 'here']] }
+    context 'value matches regexp' do
+      let(:value) { 'value' }
+      let(:criteria) { /value/ }
 
-        it_is :invalid
-      end
+      it_is :valid
     end
 
-    describe '.match' do
-      let(:test) { :match }
+    context 'valid does not match regexp' do
+      let(:value) { 'value' }
+      let(:criteria) { /not that/ }
 
-      context 'value matches regexp' do
-        let(:value) { 'value' }
-        let(:criteria) { /value/ }
+      it_is :invalid
+    end
+  end
 
-        it_is :valid
-      end
+  describe '.range' do
+    let(:test) { :range }
 
-      context 'valid does not match regexp' do
-        let(:value) { 'value' }
-        let(:criteria) { /not that/ }
+    context 'value in range' do
+      let(:value) { 5 }
+      let(:criteria) { [1, 10] }
 
-        it_is :invalid
-      end
+      it_is :valid
     end
 
-    describe '.range' do
-      let(:test) { :range }
+    context 'value at lower limit' do
+      let(:value) { 1 }
+      let(:criteria) { [1, 6] }
 
-      context 'value in range' do
-        let(:value) { 5 }
-        let(:criteria) { [1, 10] }
-
-        it_is :valid
-      end
-
-      context 'value at lower limit' do
-        let(:value) { 1 }
-        let(:criteria) { [1, 6] }
-
-        it_is :valid
-      end
-
-      context 'value at upper limit' do
-        let(:value) { 6 }
-        let(:criteria) { [1, 6] }
-
-        it_is :valid
-      end
-
-      context 'valid below range' do
-        let(:value) { 1 }
-        let(:criteria) { [3, 6] }
-
-        it_is :invalid
-      end
+      it_is :valid
     end
 
-    describe '.custom' do
-      let(:test) { :custom }
+    context 'value at upper limit' do
+      let(:value) { 6 }
+      let(:criteria) { [1, 6] }
 
-      context 'valid' do
-        let(:value) { 2 }
-        let(:criteria) {}
-        let(:block) { Proc.new { |value| value % 2 == 0 } }
+      it_is :valid
+    end
 
-        it_is :valid
-      end
+    context 'valid below range' do
+      let(:value) { 1 }
+      let(:criteria) { [3, 6] }
+
+      it_is :invalid
+    end
+  end
+
+  describe '.custom' do
+    let(:test) { :custom }
+
+    context 'valid' do
+      let(:value) { 2 }
+      let(:criteria) {}
+      let(:block) { Proc.new { |value| value % 2 == 0 } }
+
+      it_is :valid
     end
   end
 end

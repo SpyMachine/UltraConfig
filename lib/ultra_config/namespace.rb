@@ -25,8 +25,8 @@ module UltraConfig
       define_singleton_method(name) { @objects[name] }
     end
 
-    def config(name, default = nil, options = {}, &block)
-      @objects[name] = Config.new(default, options, &block)
+    def config(name, options = {}, &block)
+      @objects[name] = Config.new(options, &block)
       define_singleton_method("#{name}=") { |value| @objects[name].value = value }
       define_singleton_method(name) { @objects[name].value }
     end
