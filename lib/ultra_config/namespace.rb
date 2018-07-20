@@ -58,11 +58,12 @@ module UltraConfig
       @objects.each do |name, object|
         if object.is_a?(Config)
           if object.sanitize?
-            hash[name].nil? ? nil : hash[name] = '*****'
             hash[name] = object.value.nil? ? nil : '*****'
           else
             hash[name] = object.value
           end
+        else
+          hash[name] = object.to_sanitized_h
         end
       end
 
