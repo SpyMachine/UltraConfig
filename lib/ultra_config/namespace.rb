@@ -6,8 +6,10 @@ module UltraConfig
 
     attr_reader :objects
 
-    def initialize(&block)
+    def initialize(parents = [], &block)
       @configuration = [block]
+      @parents = parents
+
       reset
     end
 
@@ -21,12 +23,12 @@ module UltraConfig
     end
 
     def namespace(name, &block)
-      @objects[name] = Namespace.new(&block)
+      @objects[name] = Namespace.new(@parents + [name], &block)
       define_singleton_method(name) { @objects[name] }
     end
 
     def config(name, options = {}, &block)
-      @objects[name] = Config.new(options, &block)
+      @objects[name] = Config.new(name, @parents, options, &block)
       define_singleton_method("#{name}=") { |value| @objects[name].value = value }
       define_singleton_method(name) { @objects[name].value }
     end

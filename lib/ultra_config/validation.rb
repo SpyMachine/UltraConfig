@@ -8,8 +8,9 @@ module UltraConfig
       attr_reader :config
       attr_reader :value
 
-      def initialize(msg = nil, value = nil)
+      def initialize(msg = nil, config = [], value = nil)
         @value = value
+        @config = config.join('.')
 
         super(msg)
       end

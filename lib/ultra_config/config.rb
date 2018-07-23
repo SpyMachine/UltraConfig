@@ -7,7 +7,9 @@ module UltraConfig
 
     attr_reader :value
 
-    def initialize(options = {}, &block)
+    def initialize(name, parents, options = {}, &block)
+      @name = name
+      @parents = parents
       @config_block = block
 
       @value = options[:default].nil? ? nil : options[:default]
@@ -21,7 +23,7 @@ module UltraConfig
       type_safety(Settings.type_safety) unless @type_safety_checked
       @value = @intermediate_value
     rescue UltraConfig::Validation::ValidationError
-      raise UltraConfig::Validation::ValidationError.new(@error_msg, sanitize? ? '*****' : @intermediate_value)
+      raise UltraConfig::Validation::ValidationError.new(@error_msg, @parents + [@name], sanitize? ? '*****' : @intermediate_value)
     ensure
       @type_safety_checked = false
       @intermediate_value = nil
