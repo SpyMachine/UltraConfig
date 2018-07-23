@@ -21,7 +21,7 @@ module UltraConfig
       type_safety(Settings.type_safety) unless @type_safety_checked
       @value = @intermediate_value
     rescue UltraConfig::Validation::ValidationError
-      raise UltraConfig::Validation::ValidationError.new(msg: @error_msg)
+      raise UltraConfig::Validation::ValidationError, @error_msg
     ensure
       @type_safety_checked = false
       @intermediate_value = nil
