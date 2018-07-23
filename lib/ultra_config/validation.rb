@@ -4,7 +4,17 @@ module UltraConfig
   module Validation
     include Boolean
 
-    class ValidationError < StandardError; end
+    class ValidationError < StandardError
+      attr_reader :config
+      attr_reader :value
+
+      def initialize(msg = nil, value = nil)
+        @value = value
+
+        super(msg)
+      end
+    end
+
     class TypeValidationError < ValidationError; end
 
     def type_safety(type)
