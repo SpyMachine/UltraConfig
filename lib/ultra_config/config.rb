@@ -10,7 +10,7 @@ module UltraConfig
     def initialize(options = {}, &block)
       @config_block = block
 
-      @value = options[:default] || nil
+      @value = options[:default].nil? ? nil : options[:default]
       @sanitize = options[:sanitize] || false
       @error_msg = options[:error_msg]
     end
