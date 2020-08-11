@@ -1,9 +1,12 @@
+require 'logger'
+
 require_relative 'config'
 
 module UltraConfig
   class Namespace
     class ObjectNotFoundError < StandardError; end
 
+    attr_accessor :logger
     attr_reader :objects
 
     def initialize(parents = [], &block)
@@ -74,6 +77,12 @@ module UltraConfig
 
     def method_missing(m)
       raise ObjectNotFoundError
+    end
+
+    private
+
+    def logger
+      @logger ||= (logger || Logger.new(IO::NULL))
     end
   end
 end
