@@ -38,6 +38,16 @@ RSpec.describe UltraConfig::Namespace do
     end
   end
 
+  describe '#merge_hash!' do
+    it 'allows you to merge a hash into a namespace' do
+      @namespace = described_class.new(&block)
+      @namespace.config(:test, &block)
+      hash = { test: :thing }
+      @namespace.merge_hash!(hash)
+      expect(@namespace.test).to eq(:thing)
+    end
+  end
+
   describe '#method_missing' do
     context 'message is a config' do
       context 'message is to set value (=)' do
