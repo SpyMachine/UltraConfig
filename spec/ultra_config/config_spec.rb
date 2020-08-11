@@ -6,7 +6,7 @@ RSpec.describe UltraConfig::Config do
 
   describe '#initalize' do
     before(:each) do
-      @config = described_class.new(default, &validation_script)
+      @config = described_class.new(:test, [], default, &validation_script)
     end
 
     it 'sets the validation block' do
@@ -22,7 +22,7 @@ RSpec.describe UltraConfig::Config do
     let(:new) { :new }
 
     before(:each) do
-      @config = described_class.new(&validation_script)
+      @config = described_class.new(:test, [], {}, &validation_script)
       allow(@config).to receive(:validate)
       @config.value = new
     end
