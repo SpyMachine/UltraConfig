@@ -1,9 +1,12 @@
+require 'logger'
+
 require_relative 'config'
 
 module UltraConfig
   class Namespace
     class ObjectNotFoundError < StandardError; end
 
+    attr_accessor :logger
     attr_reader :objects
 
     def initialize(parents = [], &block)
@@ -55,6 +58,21 @@ module UltraConfig
       hash
     end
 
+    def merge_hash!(hash, parents = [])
+      hash.each do |k, v|
+        options = send_chain(parents)
+        if options.objects[k.to_sym].is_a?(Config)
+          options.send("#{k}=", v)
+        elsif options.objects[k.to_sym].is_a?(Namespace)
+          merge_hash!(v, parents + [k])
+        else
+          logger.warn { "received an unknown config #{k} with value #{v} and parents: #{parents}" }
+        end
+      end
+
+      self
+    end
+
     def to_sanitized_h
       hash = {}
       @objects.each do |name, object|
@@ -74,6 +92,19 @@ module UltraConfig
 
     def method_missing(m)
       raise ObjectNotFoundError
+    end
+
+    private
+
+    # Send a chain of methods to an object
+    # @param arr [Array] list of methods to send to object
+    # @return [Object] result of method chain
+    def send_chain(arr)
+      arr.inject(self) {|obj, arr| obj.send(arr) }
+    end
+
+    def logger
+      @logger ||= (logger || Logger.new(IO::NULL))
     end
   end
 end
