@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe UltraConfig::Validation do
-  subject { UltraConfig::Config.new }
+  subject { UltraConfig::Config.new(:test, []) }
   let(:validation) { Proc.new {} }
   let(:block) {}
   let(:old_value) {}
