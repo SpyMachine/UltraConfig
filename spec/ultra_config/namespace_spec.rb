@@ -41,10 +41,18 @@ RSpec.describe UltraConfig::Namespace do
   describe '#merge_hash!' do
     it 'allows you to merge a hash into a namespace' do
       @namespace = described_class.new(&block)
-      @namespace.config(:test, &block)
+      @namespace.config(:test, default: :that)
       hash = { test: :thing }
       @namespace.merge_hash!(hash)
       expect(@namespace.test).to eq(:thing)
+    end
+
+    it 'does not merge nil config values' do
+      @namespace = described_class.new(&block)
+      @namespace.config(:test, default: 5)
+      hash = { test: nil }
+      @namespace.merge_hash!(hash)
+      expect(@namespace.test).to eq(5)
     end
   end
 

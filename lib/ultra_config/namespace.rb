@@ -62,7 +62,7 @@ module UltraConfig
       hash.each do |k, v|
         options = send_chain(parents)
         if options.objects[k.to_sym].is_a?(Config)
-          options.send("#{k}=", v)
+          options.send("#{k}=", v) unless v.nil?
         elsif options.objects[k.to_sym].is_a?(Namespace)
           merge_hash!(v, parents + [k])
         else
