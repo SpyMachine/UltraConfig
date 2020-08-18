@@ -78,7 +78,13 @@ RSpec.describe UltraConfig do
 
           context 'class is different' do
             it 'does not raise an error' do
-              expect { ConfigTest.strong_type = 'string' }.to raise_error(validation_error)
+              expect { ConfigTest.strong_type = [:string] }.to raise_error(validation_error)
+            end
+          end
+
+          context 'class is different but new value is string and old value is symbol' do
+            it 'does not raise an error' do
+              expect { ConfigTest.strong_type = 'string' }.to_not raise_error
             end
           end
         end
@@ -116,7 +122,7 @@ RSpec.describe UltraConfig do
 
       it 'can not change the type unless it\'s nil' do
         expect(StronglyTypedTest.blank).to be(:new)
-        expect { StronglyTypedTest.blank = 'new' }.to raise_error(validation_error)
+        expect { StronglyTypedTest.blank = ['new'] }.to raise_error(validation_error)
       end
 
       it 'booleans can switch boolean type' do
