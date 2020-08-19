@@ -41,6 +41,11 @@ RSpec.describe UltraConfig do
           expect { ConfigTest.one_of = 'that' }.to_not raise_error
         end
 
+        it 'converts strings to symbols if value is nil but uses one_of validation with list of symbols' do
+          expect { ConfigTest.space1.one_of  = 'that' }.to_not raise_error
+          expect(ConfigTest.space1.one_of).to eq(:that)
+        end
+
         it 'does raise an error if not in list' do
           expect { ConfigTest.one_of = :the_other }.to raise_error(validation_error)
         end

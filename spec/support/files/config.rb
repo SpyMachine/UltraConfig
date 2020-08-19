@@ -31,6 +31,10 @@ ConfigTest = UltraConfig.define do
 
   namespace :space1 do
     config :default, default: :another_value
+
+    config :one_of do
+      one_of %i[this that]
+    end
   end
 
   namespace :space2 do
