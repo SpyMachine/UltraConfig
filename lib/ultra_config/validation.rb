@@ -29,6 +29,8 @@ module UltraConfig
     end
 
     def one_of(list)
+      # If comparing against a list of symbols and item is a string, the user probably wants a symbol
+      @intermediate_value = @intermediate_value.to_sym if list.all? { |i| i.is_a?(Symbol) }
       raise ValidationError unless list.include?(@intermediate_value)
     end
 
