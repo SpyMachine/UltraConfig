@@ -26,8 +26,8 @@ RSpec.describe UltraConfig do
       end
 
       it 'can be changed to any type' do
-        ConfigTest.default = 'new'
-        expect(ConfigTest.default).to eq('new')
+        ConfigTest.default = 3
+        expect(ConfigTest.default).to eq(3)
       end
     end
 
@@ -35,6 +35,10 @@ RSpec.describe UltraConfig do
       context 'one_of validation' do
         it 'does not raise an error if in list' do
           expect { ConfigTest.one_of = :that }.to_not raise_error
+        end
+
+        it 'converts strings to symbols if value is symbol' do
+          expect { ConfigTest.one_of = 'that' }.to_not raise_error
         end
 
         it 'does raise an error if not in list' do
@@ -139,7 +143,7 @@ RSpec.describe UltraConfig do
 
   describe 'reset' do
     it 'can be reset' do
-      expect(ConfigTest.default).to eq('new')
+      expect(ConfigTest.default).to eq(3)
       ConfigTest.reset
       expect(ConfigTest.default).to eq(:value)
     end
