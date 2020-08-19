@@ -19,6 +19,10 @@ module UltraConfig
 
     def value=(value)
       @intermediate_value = value
+
+      # Be nice and convert Strings to Symbols
+      @intermediate_value = @intermediate_value.to_sym if @intermediate_value.is_a?(String) && @value.is_a?(Symbol)
+
       self.instance_eval(&@config_block) if @config_block
       type_safety(Settings.type_safety) unless @type_safety_checked
       @value = @intermediate_value

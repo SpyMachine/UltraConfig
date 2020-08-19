@@ -55,14 +55,6 @@ RSpec.describe UltraConfig::Validation do
 
       it_is :valid
     end
-
-    context 'old value is a symbol and new value is a string' do
-      let(:value) { 'thing' }
-      let(:old_value) { :thing }
-      let(:criteria) { :strong }
-
-      it_is :valid
-    end
   end
 
   describe '.one_of' do

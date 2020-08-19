@@ -25,9 +25,6 @@ module UltraConfig
       return if @value.nil?
       return if @value.is_a?(Boolean) && @intermediate_value.is_a?(Boolean)
 
-      # Be nice and convert Strings to Symbols
-      @intermediate_value = @intermediate_value.to_sym if @intermediate_value.is_a?(String) && @value.is_a?(Symbol)
-
       raise TypeValidationError if @value.class != @intermediate_value.class
     end
 
